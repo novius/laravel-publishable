@@ -48,7 +48,8 @@
     },
     "scripts": {
         "test": "vendor/bin/pest --colors=always",
-        "cs-fix": "./vendor/bin/pint -v"
+        "cs-fix": "./vendor/bin/pint -v",
+        "lint": "@composer fmt -- --test"
     },
     "config": {
         "sort-packages": true,
