@@ -1,0 +1,66 @@
+{
+    "name": "novius/laravel-publishable",
+    "description": "A Laravel Eloquent model trait for publishable resource",
+    "keywords": [
+        "laravel",
+        "laravel-publishable",
+        "publish",
+        "unpublish",
+        "published",
+        "publishable",
+        "eloquent"
+    ],
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://github.com/novius/laravel-publishable",
+    "type": "library",
+    "support": {
+        "issues": "https://github.com/novius/laravel-publishable/issues",
+        "source": "https://github.com/novius/laravel-publishable"
+    },
+    "authors": [
+        {
+            "name": "Novius Agency",
+            "email": "team-developpeurs@novius.com",
+            "homepage": "https://www.novius.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0|^8.1|^8.2",
+        "illuminate/support": "^8.0 || ^9.0 || ^10.0",
+        "illuminate/database": "^8.0 || ^9.0 || ^10.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0",
+        "laravel/pint": "^1.10",
+        "pestphp/pest": "^1.10",
+        "phpunit/phpunit": "^9.0|^10.0",
+        "spatie/test-time": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Novius\\LaravelPublishable\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Novius\\LaravelPublishable\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest --colors=always",
+        "cs-fix": "./vendor/bin/pint -v"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Novius\\LaravelPublishable\\LaravelPublishableServiceProvider"
+            ]
+        }
+    }
+}
