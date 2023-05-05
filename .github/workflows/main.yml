@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: shivammathur/setup-php@v2
       with:
-        php-versions: ['8.0', '8.1', '8.2']
+        php-versions: '8.2'
 
     - name: Checkout code
       uses: actions/checkout@v3
@@ -34,11 +34,19 @@ jobs:
   test-php:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        operating-system: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        php-versions: ['8.0', '8.1', '8.2']
+        include:
+          - operating-system: 'ubuntu-latest'
+            php-versions: '8.0'
+            phpunit-versions: 9
 
     steps:
       - uses: shivammathur/setup-php@v2
         with:
-        php-versions: ['8.0', '8.1', '8.2']
+          php-version: ${{ matrix.php-versions }}
 
       - name: Checkout code
         uses: actions/checkout@v3
