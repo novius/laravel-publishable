@@ -18,6 +18,9 @@ class LaravelPublishableServiceProvider extends ServiceProvider
             $this->timestamp($columnPublishedAt)->nullable()->index();
             $this->timestamp($columnExpiredAt)->nullable()->index();
         });
+        Blueprint::macro('dropPublishable', function ($columnPublishedFirstAt = 'published_first_at', $columnPublishedAt = 'published_at', $columnExpiredAt = 'expired_at') {
+            $this->dropColumn([$columnPublishedFirstAt, $columnPublishedAt, $columnExpiredAt]);
+        });
     }
 
     public function boot()
