@@ -26,7 +26,8 @@ class PublishableScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         if (is_callable([$model, 'getQualifiedPublishedAtColumn'], true, $name)) {
-            $builder->where($model->getQualifiedPublishedAtColumn(), '<=', now()->toDateTimeString());
+            $builder->whereNotNull($model->getQualifiedPublishedAtColumn())
+                ->where($model->getQualifiedPublishedAtColumn(), '<=', now()->toDateTimeString());
         }
         if (is_callable([$model, 'getQualifiedExpiredAtColumn'], true, $name)) {
             $builder->where(function (Builder $builder) use ($model) {
@@ -102,12 +103,13 @@ class PublishableScope implements Scope
         $builder->macro('withoutNotPublished', function (Builder $builder) {
             $model = $builder->getModel();
 
-            return $builder->withoutGlobalScope($this)->where(
-                $model->getQualifiedPublishedAtColumn(), '<=', now()->toDateTimeString()
-            )->where(function (Builder $builder) use ($model) {
-                $builder->whereNull($model->getQualifiedExpiredAtColumn())
-                    ->orWhere($model->getQualifiedExpiredAtColumn(), '>', now()->toDateTimeString());
-            });
+            return $builder->withoutGlobalScope($this)
+                ->whereNotNull($model->getQualifiedPublishedAtColumn())
+                ->where($model->getQualifiedPublishedAtColumn(), '<=', now()->toDateTimeString())
+                ->where(function (Builder $builder) use ($model) {
+                    $builder->whereNull($model->getQualifiedExpiredAtColumn())
+                        ->orWhere($model->getQualifiedExpiredAtColumn(), '>', now()->toDateTimeString());
+                });
         });
     }
 
