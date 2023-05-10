@@ -6,8 +6,8 @@
 
 ## Introduction
 
-A package for making Laravel Eloquent models "publishable" using `published_at` and `expired_at` dates.
-When an additional `published_first_at` date.
+A package for making Laravel Eloquent models "publishable" using 3 states : draft, published and scheduled.
+Manage an additional `published_first_at` date for order by and display.
 Not published models are excluded from queries by default but can be queried via extra scope.
 
 ## Requirements
@@ -20,6 +20,10 @@ You can install the package via composer:
 
 ```bash
 composer require novius/laravel-publishable
+```
+
+```bash
+php artisan vendor:publish --provider="Novius\Publishable\LaravelPublishableServiceProvider" --tag=lang
 ```
 
 ## Usage

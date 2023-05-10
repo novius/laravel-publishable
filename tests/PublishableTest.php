@@ -3,6 +3,7 @@
 namespace Novius\LaravelPublishable\Tests;
 
 use Illuminate\Support\Carbon;
+use Novius\LaravelPublishable\Enums\PublicationStatus;
 use Spatie\TestTime\TestTime;
 
 class PublishableTest extends TestCase
@@ -14,19 +15,20 @@ class PublishableTest extends TestCase
     {
         $model = PublishableModel::factory()->create();
 
-        $this->assertNull($model->fresh()->published_at);
+        $this->assertEquals($model->fresh()->publication_status, PublicationStatus::draft);
+        $this->assertFalse($model->fresh()->isPublished());
 
-        $model->published_at = Carbon::now();
+        $model->publication_status = PublicationStatus::published;
         $model->save();
 
         $this->assertNotNull($model->fresh()->published_first_at);
-        $this->assertNotNull($model->fresh()->published_at);
+        $this->assertTrue($model->fresh()->isPublished());
 
-        $model->published_at = null;
+        $model->publication_status = PublicationStatus::draft;
         $model->save();
 
         $this->assertNotNull($model->fresh()->published_first_at);
-        $this->assertNull($model->fresh()->published_at);
+        $this->assertFalse($model->fresh()->isPublished());
     }
 
     /** @test */
@@ -38,10 +40,12 @@ class PublishableTest extends TestCase
 
         $this->assertNull($model->fresh()->published_at);
 
+        $model->publication_status = PublicationStatus::scheduled;
         $model->published_at = Carbon::parse('2023-05-05 21:00:00');
         $model->save();
 
         $this->assertCount(0, PublishableModel::all());
+        $this->assertFalse($model->fresh()->isPublished());
         $this->assertEquals('2023-05-05 21:00:00', $model->fresh()->published_at->toDateTimeString());
         $this->assertNull($model->fresh()->expired_at);
 
@@ -51,27 +55,19 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function all_models_can_be_found_with_the_withNotPublished_scope()
+    public function all_models_can_be_found_with_scopes()
     {
-        PublishableModel::factory()->published(1)->create();
-        PublishableModel::factory()->published(-1)->create();
-        PublishableModel::factory()->published(-2)->expired(-1)->create();
+        PublishableModel::factory()->scheduled(1)->create();
+        PublishableModel::factory()->scheduled(-1)->create();
+        PublishableModel::factory()->scheduled(-2, 1)->create();
+        PublishableModel::factory()->scheduled(-2, -1)->create();
+        PublishableModel::factory()->published()->create();
+        PublishableModel::factory()->draft()->create();
         PublishableModel::factory()->create();
 
-        $this->assertCount(1, PublishableModel::all());
-        $this->assertCount(4, PublishableModel::withNotPublished()->get());
-    }
-
-    /** @test */
-    public function only_not_published_models_can_be_found_with_the_onlyNotPublished_scope()
-    {
-        PublishableModel::factory()->published(1)->create();
-        PublishableModel::factory()->published(-1)->create();
-        PublishableModel::factory()->published(-2)->expired(1)->create();
-        PublishableModel::factory()->published(-2)->expired(-1)->create();
-        PublishableModel::factory()->create();
-
-        $this->assertCount(3, PublishableModel::onlyNotPublished()->get());
+        $this->assertCount(3, PublishableModel::all());
+        $this->assertCount(7, PublishableModel::withNotPublished()->get());
+        $this->assertCount(4, PublishableModel::onlyNotPublished()->get());
     }
 
     /** @test */
@@ -79,18 +75,21 @@ class PublishableTest extends TestCase
     {
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 20:30:00');
 
-        $model = PublishableModel::factory()->published()->create();
+        $model = PublishableModel::factory()->scheduled()->create();
 
         $this->assertNull($model->fresh()->expired_at);
+        $this->assertTrue($model->fresh()->isPublished());
 
         $model->expired_at = Carbon::parse('2023-05-05 21:00:00');
         $model->save();
 
         $this->assertCount(1, PublishableModel::all());
+        $this->assertTrue($model->fresh()->isPublished());
 
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 21:10:00');
 
         $this->assertCount(0, PublishableModel::all());
+        $this->assertFalse($model->fresh()->isPublished());
     }
 
     /** @test */
@@ -98,6 +97,7 @@ class PublishableTest extends TestCase
     {
         $this->travelTo(Carbon::parse('2023-05-05 20:30:00'));
         $model = PublishableModel::factory()->create([
+            'publication_status' => PublicationStatus::scheduled,
             'published_at' => Carbon::parse('2023-05-05 21:30:00'),
             'expired_at' => Carbon::parse('2023-05-05 21:40:00'),
         ]);
