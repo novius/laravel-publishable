@@ -90,6 +90,25 @@ trait Publishable
         return $publication_status === PublicationStatus::published;
     }
 
+    public function willBePublished(): bool
+    {
+        $publication_status = $this->{$this->getPublicationStatusColumn()};
+
+        if ($publication_status === PublicationStatus::scheduled) {
+            $published_at = $this->{$this->getPublishedAtColumn()};
+
+            if (! $published_at) {
+                return false;
+            }
+
+            $now = Carbon::now();
+
+            return $published_at > $now;
+        }
+
+        return $publication_status === PublicationStatus::published;
+    }
+
     /**
      * Return a label for the current publication status
      */
@@ -131,80 +150,64 @@ trait Publishable
 
     /**
      * Get the name of the "publication status" column.
-     *
-     * @return string
      */
-    public function getPublicationStatusColumn()
+    public function getPublicationStatusColumn(): string
     {
         return defined('static::PUBLICATION_STATUS') ? static::PUBLICATION_STATUS : 'publication_status';
     }
 
     /**
      * Get the name of the "published first at" column.
-     *
-     * @return string
      */
-    public function getPublishedFirstAtColumn()
+    public function getPublishedFirstAtColumn(): string
     {
         return defined('static::PUBLISHED_FIRST_AT') ? static::PUBLISHED_FIRST_AT : 'published_first_at';
     }
 
     /**
      * Get the name of the "published at" column.
-     *
-     * @return string
      */
-    public function getPublishedAtColumn()
+    public function getPublishedAtColumn(): string
     {
         return defined('static::PUBLISHED_AT') ? static::PUBLISHED_AT : 'published_at';
     }
 
     /**
      * Get the name of the "expired at" column.
-     *
-     * @return string
      */
-    public function getExpiredAtColumn()
+    public function getExpiredAtColumn(): string
     {
         return defined('static::EXPIRED_AT') ? static::EXPIRED_AT : 'expired_at';
     }
 
     /**
      * Get the fully qualified "publication status" column.
-     *
-     * @return string
      */
-    public function getQualifiedPublicationStatusColumn()
+    public function getQualifiedPublicationStatusColumn(): string
     {
         return $this->qualifyColumn($this->getPublicationStatusColumn());
     }
 
     /**
      * Get the fully qualified "published first at" column.
-     *
-     * @return string
      */
-    public function getQualifiedPublishedFirstAtColumn()
+    public function getQualifiedPublishedFirstAtColumn(): string
     {
         return $this->qualifyColumn($this->getPublishedFirstAtColumn());
     }
 
     /**
      * Get the fully qualified "published at" column.
-     *
-     * @return string
      */
-    public function getQualifiedPublishedAtColumn()
+    public function getQualifiedPublishedAtColumn(): string
     {
         return $this->qualifyColumn($this->getPublishedAtColumn());
     }
 
     /**
      * Get the fully qualified "expired at" column.
-     *
-     * @return string
      */
-    public function getQualifiedExpiredAtColumn()
+    public function getQualifiedExpiredAtColumn(): string
     {
         return $this->qualifyColumn($this->getExpiredAtColumn());
     }
