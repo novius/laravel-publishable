@@ -11,21 +11,20 @@ class PublishableScope implements Scope
 {
     /**
      * All of the extensions to be added to the builder.
-     *
-     * @var array
      */
-    protected $extensions = [
+    protected array $extensions = [
         'WithNotPublished',
         'WithoutNotPublished',
         'OnlyNotPublished',
+        'OnlyDrafted',
+        'OnlyExpired',
+        'OnlyWillBePublished',
     ];
 
     /**
      * Apply the scope to a given Eloquent query builder.
-     *
-     * @return void
      */
-    public function apply(Builder $builder, Model $model)
+    public function apply(Builder $builder, Model $model): void
     {
         $builder->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::published)
             ->orWhere(function (Builder $builder) use ($model) {
@@ -41,10 +40,8 @@ class PublishableScope implements Scope
 
     /**
      * Extend the query builder with the needed functions.
-     *
-     * @return void
      */
-    public function extend(Builder $builder)
+    public function extend(Builder $builder): void
     {
         foreach ($this->extensions as $extension) {
             $this->{"add{$extension}"}($builder);
@@ -53,10 +50,8 @@ class PublishableScope implements Scope
 
     /**
      * Get the "publication status" column for the builder.
-     *
-     * @return string
      */
-    protected function getPublicationStatusColumn(Builder $builder)
+    protected function getPublicationStatusColumn(Builder $builder): string
     {
         if (count((array) $builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedPublicationStatusColumn();
@@ -67,10 +62,8 @@ class PublishableScope implements Scope
 
     /**
      * Get the "published at" column for the builder.
-     *
-     * @return string
      */
-    protected function getPublishedAtColumn(Builder $builder)
+    protected function getPublishedAtColumn(Builder $builder): string
     {
         if (count((array) $builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedPublishedAtColumn();
@@ -81,10 +74,8 @@ class PublishableScope implements Scope
 
     /**
      * Get the "expired at" column for the builder.
-     *
-     * @return string
      */
-    protected function getExpiredAtColumn(Builder $builder)
+    protected function getExpiredAtColumn(Builder $builder): string
     {
         if (count((array) $builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedExpiredAtColumn();
@@ -95,10 +86,8 @@ class PublishableScope implements Scope
 
     /**
      * Add the with-notpublished extension to the builder.
-     *
-     * @return void
      */
-    protected function addWithNotPublished(Builder $builder)
+    protected function addWithNotPublished(Builder $builder): void
     {
         $builder->macro('withNotPublished', function (Builder $builder) {
             return $builder->withoutGlobalScope($this);
@@ -107,10 +96,8 @@ class PublishableScope implements Scope
 
     /**
      * Add the without-notpublished extension to the builder.
-     *
-     * @return void
      */
-    protected function addWithoutNotPublished(Builder $builder)
+    protected function addWithoutNotPublished(Builder $builder): void
     {
         $builder->macro('withoutNotPublished', function (Builder $builder) {
             $model = $builder->getModel();
@@ -131,10 +118,8 @@ class PublishableScope implements Scope
 
     /**
      * Add the only-notpublished extension to the builder.
-     *
-     * @return void
      */
-    protected function addOnlyNotPublished(Builder $builder)
+    protected function addOnlyNotPublished(Builder $builder): void
     {
         $builder->macro('onlyNotPublished', function (Builder $builder) {
             $model = $builder->getModel();
@@ -152,6 +137,55 @@ class PublishableScope implements Scope
                                 });
                         });
                 });
+
+            return $builder;
+        });
+    }
+
+    /**
+     * Add the only-drafted extension to the builder.
+     */
+    protected function addOnlyDrafted(Builder $builder): void
+    {
+        $builder->macro('onlyDrafted', function (Builder $builder) {
+            $model = $builder->getModel();
+
+            $builder->withoutGlobalScope($this)
+                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::draft);
+
+            return $builder;
+        });
+    }
+
+    /**
+     * Add the only-expired extension to the builder.
+     */
+    protected function addOnlyExpired(Builder $builder): void
+    {
+        $builder->macro('onlyExpired', function (Builder $builder) {
+            $model = $builder->getModel();
+
+            $builder->withoutGlobalScope($this)
+                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                ->whereNotNull($model->getQualifiedExpiredAtColumn())
+                ->where($model->getQualifiedExpiredAtColumn(), '<=', now()->toDateTimeString());
+
+            return $builder;
+        });
+    }
+
+    /**
+     * Add the only-willBePublished extension to the builder.
+     */
+    protected function addOnlyWillBePublished(Builder $builder): void
+    {
+        $builder->macro('onlyWillBePublished', function (Builder $builder) {
+            $model = $builder->getModel();
+
+            $builder->withoutGlobalScope($this)
+                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                ->whereNotNull($model->getQualifiedPublishedAtColumn())
+                ->where($model->getQualifiedPublishedAtColumn(), '>', now()->toDateTimeString());
 
             return $builder;
         });

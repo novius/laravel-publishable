@@ -56,7 +56,7 @@ class Post extends Model {
 
 #### Extensions
 
-The extensions shipped with this trait include; `WithoutNotPublished`, `withNotPublished`, `onlyPublished` and can be used accordingly:
+The extensions shipped with this trait include; `WithoutNotPublished`, `withNotPublished`, `onlyPublished`, `onlyDrafted`, `onlyExpired`, `onlyWillBePublished` and can be used accordingly:
 
 ```php
 $post = Post::first();
@@ -66,6 +66,9 @@ $postsPublished = Post::all();
 $postsPublished = Post::query()->WithoutNotPublished();
 $postsWithNotPublished = Post::query()->withNotPublished();
 $onlyNotPublishedPosts = Post::query()->onlyNotPublished();
+$onlyDraftedPosts = Post::query()->onlyDrafted();
+$onlyExpiredPosts = Post::query()->onlyExpired();
+$onlyWillBePublishedPosts = Post::query()->onlyWillBePublished();
 ```
 
 When not specifing any additional scopes, all not published models are excluded from the query by default to prevent leaks of not published data.

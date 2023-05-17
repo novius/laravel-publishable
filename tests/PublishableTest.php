@@ -68,6 +68,9 @@ class PublishableTest extends TestCase
         $this->assertCount(3, PublishableModel::all());
         $this->assertCount(7, PublishableModel::withNotPublished()->get());
         $this->assertCount(4, PublishableModel::onlyNotPublished()->get());
+        $this->assertCount(2, PublishableModel::onlyDrafted()->get());
+        $this->assertCount(1, PublishableModel::onlyExpired()->get());
+        $this->assertCount(1, PublishableModel::onlyWillBePublished()->get());
     }
 
     /** @test */
