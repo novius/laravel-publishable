@@ -2,18 +2,19 @@
 
 namespace Novius\LaravelPublishable\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Novius\LaravelPublishable\Enums\PublicationStatus;
 use Novius\LaravelPublishable\Scopes\PublishableScope;
 
 /**
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withNotPublished()
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder withoutNotPublished()
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyNotPublished()
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyDrafted()
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyExpired()
- * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyWillBePublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder withNotPublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder withoutNotPublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder onlyNotPublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder onlyDrafted()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder onlyExpired()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder onlyWillBePublished()
  */
 trait Publishable
 {
@@ -24,11 +25,16 @@ trait Publishable
     {
         static::addGlobalScope(new PublishableScope);
         static::saving(static function (Model $model) {
+            /** @var Model|Publishable $model */
             $publication_status = $model->{$model->getPublicationStatusColumn()};
             $published_first_at = $model->{$model->getPublishedFirstAtColumn()};
             $now = Carbon::now();
 
-            if (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::published])) {
+            if ($publication_status === PublicationStatus::draft && $published_first_at !== null) {
+                $model->{$model->getPublicationStatusColumn()} = PublicationStatus::scheduled;
+                $model->{$model->getPublishedAtColumn()} = null;
+                $model->{$model->getExpiredAtColumn()} = $now;
+            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::published], true)) {
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = null;
 
@@ -117,7 +123,7 @@ trait Publishable
      */
     public function publicationLabel(): string
     {
-        if (in_array($this->{$this->getPublicationStatusColumn()}, [PublicationStatus::draft, PublicationStatus::published])) {
+        if (in_array($this->{$this->getPublicationStatusColumn()}, [PublicationStatus::draft, PublicationStatus::published], true)) {
             return $this->{$this->getPublicationStatusColumn()}->getLabel();
         }
 
