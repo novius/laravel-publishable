@@ -132,9 +132,11 @@ trait Publishable
             return $this->{$this->getPublicationStatusColumn()}->getLabel();
         }
 
-        $published_at = $this->{$this->getPublishedAtColumn()};
-        if ($published_at === null) {
-            return PublicationStatus::draft->getLabel();
+        if ($this->{$this->getPublicationStatusColumn()} === PublicationStatus::scheduled) {
+            $published_at = $this->{$this->getPublishedAtColumn()};
+            if ($published_at === null) {
+                return PublicationStatus::draft->getLabel();
+            }
         }
 
         $expired_at = $this->{$this->getExpiredAtColumn()};
