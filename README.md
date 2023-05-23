@@ -6,7 +6,7 @@
 
 ## Introduction
 
-A package for making Laravel Eloquent models "publishable" using 3 states : draft, published and scheduled.
+A package for making Laravel Eloquent models "publishable" using 4 states : draft, published, unpublished and scheduled.
 Manage an additional `published_first_at` date for order by and display.
 Not published models are excluded from queries by default but can be queried via extra scope.
 

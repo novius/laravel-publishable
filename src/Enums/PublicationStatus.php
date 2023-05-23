@@ -6,6 +6,7 @@ enum PublicationStatus: string
 {
     case draft = 'draft';
     case published = 'published';
+    case unpublished = 'unpublished';
     case scheduled = 'scheduled';
 
     public function getLabel(): string

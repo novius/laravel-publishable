@@ -125,7 +125,7 @@ class PublishableScope implements Scope
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
-                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::draft)
+                ->whereIn($model->getQualifiedPublicationStatusColumn(), [PublicationStatus::draft, PublicationStatus::unpublished])
                 ->orWhere(function (Builder $builder) use ($model) {
                     $builder->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
                         ->where(function (Builder $builder) use ($model) {
@@ -166,9 +166,12 @@ class PublishableScope implements Scope
             $model = $builder->getModel();
 
             $builder->withoutGlobalScope($this)
-                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
-                ->whereNotNull($model->getQualifiedExpiredAtColumn())
-                ->where($model->getQualifiedExpiredAtColumn(), '<=', now()->toDateTimeString());
+                ->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::unpublished)
+                ->orWhere(function (Builder $builder) use ($model) {
+                    $builder->where($model->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                        ->whereNotNull($model->getQualifiedExpiredAtColumn())
+                        ->where($model->getQualifiedExpiredAtColumn(), '<=', now()->toDateTimeString());
+                });
 
             return $builder;
         });

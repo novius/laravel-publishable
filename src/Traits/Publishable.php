@@ -30,21 +30,26 @@ trait Publishable
             $published_first_at = $model->{$model->getPublishedFirstAtColumn()};
             $now = Carbon::now();
 
-            if ($publication_status === PublicationStatus::draft && $published_first_at !== null) {
-                $model->{$model->getPublicationStatusColumn()} = PublicationStatus::scheduled;
+            if (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at !== null) {
+                $model->{$model->getPublicationStatusColumn()} = PublicationStatus::unpublished;
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = $now;
-            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::published], true)) {
+            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at !== null) {
+                $model->{$model->getPublicationStatusColumn()} = PublicationStatus::draft;
+                $model->{$model->getPublishedAtColumn()} = null;
+                $model->{$model->getExpiredAtColumn()} = null;
+            } elseif ($publication_status === PublicationStatus::published) {
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = null;
 
-                if ($publication_status === PublicationStatus::published && $published_first_at === null) {
+                if ($published_first_at === null) {
                     $model->{$model->getPublishedFirstAtColumn()} = $now;
                 }
-            } else {
+            } elseif ($publication_status === PublicationStatus::scheduled) {
                 $published_at = $model->{$model->getPublishedAtColumn()};
                 if ($published_at === null) {
                     $model->{$model->getPublishedAtColumn()} = $now;
+                    $published_at = $now;
                 }
 
                 if ($published_first_at === null || $published_first_at > $published_at) {

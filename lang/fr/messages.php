@@ -4,6 +4,7 @@ return [
     'status' => [
         'draft' => 'Brouillon',
         'published' => 'Publié',
+        'unpublished' => 'Dépublié',
         'scheduled' => 'Programmé',
     ],
     'labels' => [
