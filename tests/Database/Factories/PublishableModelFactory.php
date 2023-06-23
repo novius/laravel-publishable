@@ -42,10 +42,10 @@ class PublishableModelFactory extends Factory
     public function scheduled(int $published_days = 0, int $expired_days = null)
     {
         return $this->state(function (array $attributes) use ($published_days, $expired_days) {
-                return [
-                    'publication_status' => PublicationStatus::scheduled,
-                    'published_at' => now()->addDays($published_days),
-'expired_at' => $expired_days !== null ? now()->addDays($expired_days) : null,
+            return [
+                'publication_status' => PublicationStatus::scheduled,
+                'published_at' => now()->addDays($published_days),
+                'expired_at' => $expired_days !== null ? now()->addDays($expired_days) : null,
             ];
         });
     }
