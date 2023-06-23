@@ -12,6 +12,16 @@ class LaravelPublishableServiceProvider extends ServiceProvider
     {
     }
 
+    public function boot()
+    {
+        $this->configureMacros();
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'publishable');
+
+        $this->publishes([
+            __DIR__.'/../lang' => $this->app->langPath('vendor/publishable'),
+        ]);
+    }
+
     protected function configureMacros()
     {
         Blueprint::macro('publishable', function ($columnStatus = 'publication_status', $columnPublishedFirstAt = 'published_first_at', $columnPublishedAt = 'published_at', $columnExpiredAt = 'expired_at') {
@@ -22,18 +32,9 @@ class LaravelPublishableServiceProvider extends ServiceProvider
 
             $this->index([$columnStatus, $columnPublishedAt, $columnExpiredAt]);
         });
+
         Blueprint::macro('dropPublishable', function ($columnStatus = 'publication_status', $columnPublishedFirstAt = 'published_first_at', $columnPublishedAt = 'published_at', $columnExpiredAt = 'expired_at') {
             $this->dropColumn([$columnStatus, $columnPublishedFirstAt, $columnPublishedAt, $columnExpiredAt]);
         });
-    }
-
-    public function boot()
-    {
-        $this->configureMacros();
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'publishable');
-
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/publishable'),
-        ]);
     }
 }

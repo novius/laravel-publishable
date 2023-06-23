@@ -14,7 +14,7 @@ class PublishableScope implements Scope
      */
     protected array $extensions = [
         'WithNotPublished',
-        'WithoutNotPublished',
+        'OnlyPublished',
         'OnlyNotPublished',
         'OnlyDrafted',
         'OnlyExpired',
@@ -97,9 +97,9 @@ class PublishableScope implements Scope
     /**
      * Add the without-notpublished extension to the builder.
      */
-    protected function addWithoutNotPublished(Builder $builder): void
+    protected function addOnlyPublished(Builder $builder): void
     {
-        $builder->macro('withoutNotPublished', function (Builder $builder) {
+        $builder->macro('onlyPublished', function (Builder $builder) {
             $model = $builder->getModel();
 
             return $builder->withoutGlobalScope($this)

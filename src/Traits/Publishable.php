@@ -10,7 +10,7 @@ use Novius\LaravelPublishable\Scopes\PublishableScope;
 
 /**
  * @method static static|Builder|\Illuminate\Database\Query\Builder withNotPublished()
- * @method static static|Builder|\Illuminate\Database\Query\Builder withoutNotPublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder onlyPublished()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyNotPublished()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyDrafted()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyExpired()

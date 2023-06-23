@@ -4,6 +4,7 @@ namespace Novius\LaravelPublishable\Tests;
 
 use Illuminate\Support\Carbon;
 use Novius\LaravelPublishable\Enums\PublicationStatus;
+use Novius\LaravelPublishable\Tests\Models\PublishableModel;
 use Spatie\TestTime\TestTime;
 
 class PublishableTest extends TestCase

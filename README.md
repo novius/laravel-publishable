@@ -56,14 +56,14 @@ class Post extends Model {
 
 #### Extensions
 
-The extensions shipped with this trait include; `WithoutNotPublished`, `withNotPublished`, `onlyPublished`, `onlyDrafted`, `onlyExpired`, `onlyWillBePublished` and can be used accordingly:
+The extensions shipped with this trait include; `withNotPublished`, `onlyPublished`, `OnlyNotPublished`, `onlyDrafted`, `onlyExpired`, `onlyWillBePublished` and can be used accordingly:
 
 ```php
 $post = Post::first();
 $post->isPublished();
 
 $postsPublished = Post::all();
-$postsPublished = Post::query()->WithoutNotPublished();
+$postsPublished = Post::query()->onlyPublished();
 $postsWithNotPublished = Post::query()->withNotPublished();
 $onlyNotPublishedPosts = Post::query()->onlyNotPublished();
 $onlyDraftedPosts = Post::query()->onlyDrafted();
