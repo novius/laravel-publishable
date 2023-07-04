@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Novius\LaravelPublishable\Enums\PublicationStatus;
-use Novius\LaravelPublishable\Scopes\PublishableScope;
 
 /**
  * @method static static|Builder|\Illuminate\Database\Query\Builder withNotPublished()
@@ -23,7 +22,6 @@ trait Publishable
      */
     public static function bootPublishable(): void
     {
-        static::addGlobalScope(new PublishableScope);
         static::saving(static function (Model $model) {
             /** @var Model|Publishable $model */
             $publication_status = $model->{$model->getPublicationStatusColumn()};
@@ -226,5 +224,57 @@ trait Publishable
     public function getQualifiedExpiredAtColumn(): string
     {
         return $this->qualifyColumn($this->getExpiredAtColumn());
+    }
+
+    public function scopePublished(Builder $builder): void
+    {
+        $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::published)
+            ->orWhere(function (Builder $builder) {
+                $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                    ->whereNotNull($this->getQualifiedPublishedAtColumn())
+                    ->where($this->getQualifiedPublishedAtColumn(), '<=', now()->toDateTimeString())
+                    ->where(function (Builder $builder) {
+                        $builder->whereNull($this->getQualifiedExpiredAtColumn())
+                            ->orWhere($this->getQualifiedExpiredAtColumn(), '>', now()->toDateTimeString());
+                    });
+            });
+    }
+
+    public function scopeNotPublished(Builder $builder): void
+    {
+        $builder->whereIn($this->getQualifiedPublicationStatusColumn(), [PublicationStatus::draft, PublicationStatus::unpublished])
+            ->orWhere(function (Builder $builder) {
+                $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                    ->where(function (Builder $builder) {
+                        $builder->whereNull($this->getQualifiedPublishedAtColumn())
+                            ->orWhere($this->getQualifiedPublishedAtColumn(), '>', now()->toDateTimeString())
+                            ->orWhere(function (Builder $builder) {
+                                $builder->whereNotNull($this->getQualifiedExpiredAtColumn())
+                                    ->where($this->getQualifiedExpiredAtColumn(), '<=', now()->toDateTimeString());
+                            });
+                    });
+            });
+    }
+
+    public function scopeOnlyDrafted(Builder $builder): void
+    {
+        $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::draft);
+    }
+
+    public function scopeOnlyExpired(Builder $builder): void
+    {
+        $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::unpublished)
+            ->orWhere(function (Builder $builder) {
+                $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+                    ->whereNotNull($this->getQualifiedExpiredAtColumn())
+                    ->where($this->getQualifiedExpiredAtColumn(), '<=', now()->toDateTimeString());
+            });
+    }
+
+    public function scopeOnlyWillBePublished(Builder $builder): void
+    {
+        $builder->where($this->getQualifiedPublicationStatusColumn(), '=', PublicationStatus::scheduled)
+            ->whereNotNull($this->getQualifiedPublishedAtColumn())
+            ->where($this->getQualifiedPublishedAtColumn(), '>', now()->toDateTimeString());
     }
 }

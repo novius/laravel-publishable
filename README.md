@@ -8,7 +8,6 @@
 
 A package for making Laravel Eloquent models "publishable" using 4 states : draft, published, unpublished and scheduled.
 Manage an additional `published_first_at` date for order by and display.
-Not published models are excluded from queries by default but can be queried via extra scope.
 
 ## Requirements
 
@@ -56,16 +55,15 @@ class Post extends Model {
 
 #### Extensions
 
-The extensions shipped with this trait include; `withNotPublished`, `onlyPublished`, `OnlyNotPublished`, `onlyDrafted`, `onlyExpired`, `onlyWillBePublished` and can be used accordingly:
+The extensions shipped with this trait include; `notPublished`, `published`, `onlyDrafted`, `onlyExpired`, `onlyWillBePublished` and can be used accordingly:
 
 ```php
 $post = Post::first();
 $post->isPublished();
 
 $postsPublished = Post::all();
-$postsPublished = Post::query()->onlyPublished();
-$postsWithNotPublished = Post::query()->withNotPublished();
-$onlyNotPublishedPosts = Post::query()->onlyNotPublished();
+$postsPublished = Post::query()->published();
+$onlyNotPublishedPosts = Post::query()->notPublished();
 $onlyDraftedPosts = Post::query()->onlyDrafted();
 $onlyExpiredPosts = Post::query()->onlyExpired();
 $onlyWillBePublishedPosts = Post::query()->onlyWillBePublished();

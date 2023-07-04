@@ -45,7 +45,8 @@ class PublishableTest extends TestCase
         $model->published_at = Carbon::parse('2023-05-05 21:00:00');
         $model->save();
 
-        $this->assertCount(0, PublishableModel::all());
+        $this->assertCount(1, PublishableModel::all());
+        $this->assertCount(0, PublishableModel::published()->get());
         $this->assertFalse($model->fresh()->isPublished());
         $this->assertEquals('2023-05-05 21:00:00', $model->fresh()->published_at->toDateTimeString());
         $this->assertNull($model->fresh()->expired_at);
@@ -67,9 +68,9 @@ class PublishableTest extends TestCase
         PublishableModel::factory()->draft()->create();
         PublishableModel::factory()->create();
 
-        $this->assertCount(3, PublishableModel::all());
-        $this->assertCount(8, PublishableModel::withNotPublished()->get());
-        $this->assertCount(5, PublishableModel::onlyNotPublished()->get());
+        $this->assertCount(8, PublishableModel::all());
+        $this->assertCount(3, PublishableModel::published()->get());
+        $this->assertCount(5, PublishableModel::notPublished()->get());
         $this->assertCount(2, PublishableModel::onlyDrafted()->get());
         $this->assertCount(2, PublishableModel::onlyExpired()->get());
         $this->assertCount(1, PublishableModel::onlyWillBePublished()->get());
@@ -93,7 +94,8 @@ class PublishableTest extends TestCase
 
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 21:10:00');
 
-        $this->assertCount(0, PublishableModel::all());
+        $this->assertCount(1, PublishableModel::all());
+        $this->assertCount(0, PublishableModel::published()->get());
         $this->assertFalse($model->fresh()->isPublished());
     }
 
