@@ -8,9 +8,8 @@ use Illuminate\Support\Carbon;
 use Novius\LaravelPublishable\Enums\PublicationStatus;
 
 /**
- * @method static static|Builder|\Illuminate\Database\Query\Builder withNotPublished()
- * @method static static|Builder|\Illuminate\Database\Query\Builder onlyPublished()
- * @method static static|Builder|\Illuminate\Database\Query\Builder onlyNotPublished()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder published()
+ * @method static static|Builder|\Illuminate\Database\Query\Builder notPublished()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyDrafted()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyExpired()
  * @method static static|Builder|\Illuminate\Database\Query\Builder onlyWillBePublished()
