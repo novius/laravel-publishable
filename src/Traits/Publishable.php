@@ -31,7 +31,7 @@ trait Publishable
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::unpublished;
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = $now;
-            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at !== null) {
+            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at === null) {
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::draft;
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = null;
