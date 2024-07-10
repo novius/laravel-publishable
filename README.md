@@ -12,7 +12,12 @@ Manage an additional `published_first_at` date for order by and display.
 
 ## Requirements
 
-* Laravel 8.0, 9.0 or 10.0
+* Laravel >= 10.0
+* PHP >= 8.2
+
+> **NOTE**: These instructions are for Laravel >= 10.0 and PHP >= 8.2 If you are using prior version, please
+> see the [previous version's docs](https://github.com/novius/laravel-publishable/tree/2.x).
+
 
 ## Installation
 

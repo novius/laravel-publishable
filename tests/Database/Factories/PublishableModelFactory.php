@@ -39,7 +39,7 @@ class PublishableModelFactory extends Factory
         });
     }
 
-    public function scheduled(int $published_days = 0, int $expired_days = null)
+    public function scheduled(int $published_days = 0, ?int $expired_days = null)
     {
         return $this->state(function (array $attributes) use ($published_days, $expired_days) {
             return [

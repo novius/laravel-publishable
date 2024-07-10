@@ -8,9 +8,7 @@ use Novius\LaravelPublishable\Enums\PublicationStatus;
 
 class LaravelPublishableServiceProvider extends ServiceProvider
 {
-    public function register()
-    {
-    }
+    public function register() {}
 
     public function boot()
     {
