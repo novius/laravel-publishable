@@ -10,7 +10,7 @@ class PublishableModelFactory extends Factory
 {
     protected $model = PublishableModel::class;
 
-    public function draft()
+    public function draft(): PublishableModelFactory
     {
         return $this->state(function (array $attributes) {
             return [
@@ -19,7 +19,7 @@ class PublishableModelFactory extends Factory
         });
     }
 
-    public function published()
+    public function published(): PublishableModelFactory
     {
         return $this->state(function (array $attributes) {
             return [
@@ -28,7 +28,7 @@ class PublishableModelFactory extends Factory
         });
     }
 
-    public function unpublished(int $first_published_days = -2, int $expired_days = -1)
+    public function unpublished(int $first_published_days = -2, int $expired_days = -1): PublishableModelFactory
     {
         return $this->state(function (array $attributes) use ($first_published_days, $expired_days) {
             return [
@@ -39,7 +39,7 @@ class PublishableModelFactory extends Factory
         });
     }
 
-    public function scheduled(int $published_days = 0, ?int $expired_days = null)
+    public function scheduled(int $published_days = 0, ?int $expired_days = null): PublishableModelFactory
     {
         return $this->state(function (array $attributes) use ($published_days, $expired_days) {
             return [
@@ -50,7 +50,7 @@ class PublishableModelFactory extends Factory
         });
     }
 
-    public function definition()
+    public function definition(): array
     {
         return [];
     }

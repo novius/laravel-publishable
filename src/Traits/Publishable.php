@@ -27,11 +27,11 @@ trait Publishable
             $published_first_at = $model->{$model->getPublishedFirstAtColumn()};
             $now = Carbon::now();
 
-            if (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at !== null) {
+            if ($published_first_at !== null && in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true)) {
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::unpublished;
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = $now;
-            } elseif (in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true) && $published_first_at === null) {
+            } elseif ($published_first_at === null && in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true)) {
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::draft;
                 $model->{$model->getPublishedAtColumn()} = null;
                 $model->{$model->getExpiredAtColumn()} = null;
@@ -129,6 +129,7 @@ trait Publishable
             return $this->{$this->getPublicationStatusColumn()}->getLabel();
         }
 
+        $published_at = $this->{$this->getPublishedAtColumn()};
         if ($this->{$this->getPublicationStatusColumn()} === PublicationStatus::scheduled) {
             $published_at = $this->{$this->getPublishedAtColumn()};
             if ($published_at === null) {

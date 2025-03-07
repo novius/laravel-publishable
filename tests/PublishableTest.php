@@ -12,11 +12,11 @@ class PublishableTest extends TestCase
     /* --- Publishable Tests --- */
 
     /** @test */
-    public function a_model_can_be_published_multiple_time()
+    public function a_model_can_be_published_multiple_time(): void: void
     {
         $model = PublishableModel::factory()->create();
 
-        $this->assertEquals($model->fresh()->publication_status, PublicationStatus::draft);
+        $this->assertEquals(PublicationStatus::draft, $model->fresh()->publication_status);
         $this->assertFalse($model->fresh()->isPublished());
 
         $model->publication_status = PublicationStatus::published;
@@ -33,7 +33,7 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function a_model_can_be_published_in_the_future_and_only_be_accessed_after_that()
+    public function a_model_can_be_published_in_the_future_and_only_be_accessed_after_that(): void
     {
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 20:30:00');
 
@@ -57,7 +57,7 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function all_models_can_be_found_with_scopes()
+    public function all_models_can_be_found_with_scopes(): void
     {
         PublishableModel::factory()->scheduled(1)->create();
         PublishableModel::factory()->scheduled(-1)->create();
@@ -77,7 +77,7 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function a_model_can_be_expired_in_the_future_and_only_be_accessed_before_that()
+    public function a_model_can_be_expired_in_the_future_and_only_be_accessed_before_that(): void
     {
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 20:30:00');
 
@@ -100,7 +100,7 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function only_change_status_of_a_model()
+    public function only_change_status_of_a_model(): void
     {
         TestTime::freeze('Y-m-d H:i:s', '2023-05-05 19:30:00');
 
@@ -179,7 +179,7 @@ class PublishableTest extends TestCase
     }
 
     /** @test */
-    public function accessor_isPublished_returns_true_if_published()
+    public function accessor_is_published_returns_true_if_published(): void
     {
         $this->travelTo(Carbon::parse('2023-05-05 20:30:00'));
         $model = PublishableModel::factory()->create([

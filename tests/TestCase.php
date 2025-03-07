@@ -9,12 +9,12 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            function (string $modelName) {
+            static function (string $modelName) {
                 return 'Novius\\LaravelPublishable\\Tests\\Database\\Factories\\'.class_basename($modelName).'Factory';
             }
         );
@@ -22,14 +22,14 @@ abstract class TestCase extends Orchestra
         $this->setUpDatabase($this->app);
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             LaravelPublishableServiceProvider::class,
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    public function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
@@ -39,7 +39,7 @@ abstract class TestCase extends Orchestra
         ]);
     }
 
-    protected function setUpDatabase($app)
+    protected function setUpDatabase($app): void
     {
         $this->loadLaravelMigrations();
 

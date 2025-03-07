@@ -8,9 +8,9 @@ use Novius\LaravelPublishable\Enums\PublicationStatus;
 
 class LaravelPublishableServiceProvider extends ServiceProvider
 {
-    public function register() {}
+    public function register(): void {}
 
-    public function boot()
+    public function boot(): void
     {
         $this->configureMacros();
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'publishable');
@@ -20,7 +20,7 @@ class LaravelPublishableServiceProvider extends ServiceProvider
         ]);
     }
 
-    protected function configureMacros()
+    protected function configureMacros(): void
     {
         Blueprint::macro('publishable', function ($columnStatus = 'publication_status', $columnPublishedFirstAt = 'published_first_at', $columnPublishedAt = 'published_at', $columnExpiredAt = 'expired_at') {
             $this->enum($columnStatus, array_column(PublicationStatus::cases(), 'value'))->default(PublicationStatus::draft->value);
