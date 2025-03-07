@@ -12,7 +12,7 @@ class PublishableTest extends TestCase
     /* --- Publishable Tests --- */
 
     /** @test */
-    public function a_model_can_be_published_multiple_time(): void: void
+    public function a_model_can_be_published_multiple_time(): void
     {
         $model = PublishableModel::factory()->create();
 
