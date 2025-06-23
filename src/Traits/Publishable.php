@@ -25,12 +25,15 @@ trait Publishable
             /** @var Model|Publishable $model */
             $publication_status = $model->{$model->getPublicationStatusColumn()};
             $published_first_at = $model->{$model->getPublishedFirstAtColumn()};
+            $expired_at = $model->{$model->getExpiredAtColumn()};
             $now = Carbon::now();
 
             if ($published_first_at !== null && in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true)) {
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::unpublished;
                 $model->{$model->getPublishedAtColumn()} = null;
-                $model->{$model->getExpiredAtColumn()} = $now;
+                if ($expired_at === null || $expired_at->isFuture()) {
+                    $model->{$model->getExpiredAtColumn()} = $now;
+                }
             } elseif ($published_first_at === null && in_array($publication_status, [PublicationStatus::draft, PublicationStatus::unpublished], true)) {
                 $model->{$model->getPublicationStatusColumn()} = PublicationStatus::draft;
                 $model->{$model->getPublishedAtColumn()} = null;
