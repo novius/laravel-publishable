@@ -75,8 +75,6 @@ $onlyExpiredPosts = Post::query()->onlyExpired();
 $onlyWillBePublishedPosts = Post::query()->onlyWillBePublished();
 ```
 
-When not specifing any additional scopes, all not published models are excluded from the query by default to prevent leaks of not published data.
-
 ### Testing
 
 ```bash
